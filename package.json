@@ -4,10 +4,12 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc -b && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "fix-encoding": "powershell -Command \"Get-ChildItem -Path 'src' -Recurse -Include '*.tsx','*.ts' | ForEach-Object { $content = Get-Content $_.FullName -Raw -Encoding UTF8; Set-Content $_.FullName -Value $content -Encoding UTF8 }\""
   },
   "repository": {
     "type": "git",
@@ -19,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/cmjlucas/evalstage2/issues"
   },
-  "homepage": "https://github.com/cmjlucas/evalstage2#readme",
+  "homepage": "https://cmjlucas.github.io/evalstage2",
   "description": "",
   "dependencies": {
     "@types/file-saver": "^2.0.7",

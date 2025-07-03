@@ -1,4 +1,4 @@
-import { db } from '../firebase';
+﻿import { db } from '../firebase';
 import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { PeriodeStage } from '../types';
 

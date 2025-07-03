@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, setDoc } from 'firebase/firestore';
+﻿import { collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, setDoc } from 'firebase/firestore';
 import { createUserWithEmailAndPassword, deleteUser as deleteAuthUser } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { User } from '../types';
