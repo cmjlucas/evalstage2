@@ -1,0 +1,214 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-blue));
+  color: #fff;
+  box-shadow: var(--shadow-light);
+  border-radius: 0 0 30px 30px;
+  font-family: 'Nunito', 'Inter', sans-serif;
+}
+
+.app.dark .header {
+  box-shadow: var(--shadow-dark);
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.theme-toggle {
+  background: #fff;
+  border: 2px solid var(--accent-blue);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--accent-blue);
+}
+
+.theme-toggle:hover {
+  background: var(--accent-blue);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.welcome {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.welcome h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--accent-blue);
+  font-family: 'Nunito', 'Inter', sans-serif;
+}
+
+.welcome p {
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.menu-button {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-orange));
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 2rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(62, 207, 142, 0.12);
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'Nunito', 'Inter', sans-serif;
+}
+
+.app.dark .menu-button {
+  box-shadow: var(--shadow-dark);
+}
+
+.menu-button:hover {
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-orange));
+  color: #fff;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+}
+
+.menu-button:active {
+  transform: translateY(-2px);
+}
+
+/* Loading */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
+  color: var(--accent-orange);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .main {
+    padding: 1rem;
+  }
+  
+  .welcome h2 {
+    font-size: 2rem;
+  }
+  
+  .menu-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .menu-button {
+    padding: 1.5rem;
+    font-size: 1.1rem;
+    min-height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome h2 {
+    font-size: 1.5rem;
+  }
+  
+  .menu-button {
+    padding: 1rem;
+    font-size: 1rem;
+    min-height: 80px;
+  }
+}
+
+.home-landing .tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto 2rem auto;
+}
+
+.tile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f8fafc;
+  border-radius: 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  text-decoration: none;
+  transition: box-shadow 0.2s, transform 0.2s;
+  border: 2px solid transparent;
+  min-height: 260px;
+}
+
+.tile-card:hover {
+  box-shadow: 0 8px 32px rgba(62, 207, 142, 0.15);
+  border-color: var(--accent-blue);
+  transform: translateY(-4px) scale(1.03);
+}
+
+.tile-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.tile-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.tile-desc {
+  font-size: 1.05rem;
+  color: #666;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 700px) {
+  .home-landing .tiles-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+  .tile-card {
+    padding: 1.5rem 0.7rem 1.2rem 0.7rem;
+    min-height: 180px;
+  }
+  .tile-icon {
+    font-size: 2.2rem;
+  }
+  .tile-title {
+    font-size: 1.1rem;
+  }
+  .tile-desc {
+    font-size: 0.95rem;
+  }
+} 

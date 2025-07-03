@@ -1,0 +1,173 @@
+.navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  font-family: 'Nunito', 'Inter', sans-serif;
+}
+
+.nav-container {
+  position: relative;
+}
+
+.menu-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #fff;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1001;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.menu-toggle:hover {
+  background: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.app.dark .menu-toggle {
+  background: #333;
+  border-color: #fff;
+  color: #fff;
+}
+
+.app.dark .menu-toggle:hover {
+  background: #444;
+}
+
+.nav-menu {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 300px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: right 0.3s ease;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.app.dark .nav-menu {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.nav-menu.open {
+  right: 0;
+}
+
+.user-info {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.app.dark .user-info {
+  border-bottom-color: #333;
+}
+
+.user-info p {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.user-info strong {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.user-role {
+  font-size: 12px;
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  padding: 20px 0;
+}
+
+.nav-link {
+  display: block;
+  padding: 15px 20px;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  border-left: 3px solid transparent;
+}
+
+.app.dark .nav-link {
+  color: #fff;
+}
+
+.nav-link:hover {
+  background: #f5f5f5;
+  border-left-color: #007bff;
+}
+
+.app.dark .nav-link:hover {
+  background: #333;
+  border-left-color: #007bff;
+}
+
+.nav-actions {
+  padding: 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.app.dark .nav-actions {
+  border-top-color: #333;
+}
+
+.theme-toggle {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background: #0056b3;
+}
+
+.logout-button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background: #c82333;
+}
+
+@media (max-width: 768px) {
+  .nav-menu {
+    width: 280px;
+  }
+  
+  .menu-toggle {
+    top: 15px;
+    right: 15px;
+    padding: 8px 12px;
+    font-size: 18px;
+  }
+} 
