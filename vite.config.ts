@@ -7,5 +7,8 @@ export default defineConfig({
     port: 3000,
     open: true
   },
-  base: '/',
+  base: '/evalstage2/',
+  build: {
+    outDir: 'dist',
+  }
 }) 
