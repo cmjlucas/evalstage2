@@ -257,6 +257,12 @@
   box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
+/* Modal pour le thème sombre */
+.app.dark .modal {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -265,10 +271,20 @@
   border-bottom: 1px solid #e0e0e0;
 }
 
+/* Header modal pour le thème sombre */
+.app.dark .modal-header {
+  border-bottom: 1px solid #3f3f46;
+}
+
 .modal-header h3 {
   margin: 0;
   color: #333;
   font-size: 18px;
+}
+
+/* Titre modal pour le thème sombre */
+.app.dark .modal-header h3 {
+  color: #f9fafb;
 }
 
 .btn-close {
@@ -290,6 +306,16 @@
 .btn-close:hover {
   background-color: #f0f0f0;
   color: #333;
+}
+
+/* Bouton fermer pour le thème sombre */
+.app.dark .btn-close {
+  color: #d1d5db;
+}
+
+.app.dark .btn-close:hover {
+  background-color: #3f3f46;
+  color: #f9fafb;
 }
 
 /* Formulaire modal */
@@ -316,6 +342,11 @@
   font-size: 14px;
 }
 
+/* Labels pour le thème sombre */
+.app.dark .form-group label {
+  color: #f9fafb;
+}
+
 .form-group input,
 .form-group select {
   width: 100%;
@@ -327,11 +358,26 @@
   box-sizing: border-box;
 }
 
+/* Champs de saisie pour le thème sombre */
+.app.dark .form-group input,
+.app.dark .form-group select {
+  background: #374151;
+  border: 2px solid #4b5563;
+  color: #f9fafb;
+}
+
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
   border-color: #4CAF50;
   box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+/* Focus des champs pour le thème sombre */
+.app.dark .form-group input:focus,
+.app.dark .form-group select:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
 }
 
 .form-help {
@@ -342,6 +388,11 @@
   font-style: italic;
 }
 
+/* Texte d'aide pour le thème sombre */
+.app.dark .form-help {
+  color: #9ca3af;
+}
+
 /* Actions du modal */
 .modal-actions {
   display: flex;
@@ -350,6 +401,11 @@
   margin-top: 25px;
   padding-top: 20px;
   border-top: 1px solid #e0e0e0;
+}
+
+/* Actions modal pour le thème sombre */
+.app.dark .modal-actions {
+  border-top: 1px solid #3f3f46;
 }
 
 .btn-cancel {
