@@ -20,7 +20,7 @@
 }
 
 .btn-primary {
-  background-color: #007bff;
+  background-color: #374151;
   color: #fff;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -31,7 +31,7 @@
 }
 
 .btn-primary:hover {
-  background-color: #0056b3;
+  background-color: #4b5563;
 }
 
 .btn-secondary {
@@ -45,7 +45,7 @@
 }
 
 .btn-secondary:hover {
-  background-color: #545b62;
+  background-color: #4b5563;
 }
 
 .btn-edit {
@@ -100,7 +100,7 @@
 .periode-tile:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  border-color: #007bff;
+  border-color: #374151;
 }
 
 .periode-content {
@@ -234,7 +234,7 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #007bff;
+  border-color: #374151;
 }
 
 .form-actions {
@@ -261,6 +261,56 @@
   padding: 2rem;
   color: #666;
   font-size: 1.1rem;
+}
+
+/* Styles pour le thème sombre */
+.app.dark .periode-tile {
+  background: #27272a;
+  border-color: #3f3f46;
+}
+
+.app.dark .periode-content h3 {
+  color: #f9fafb;
+}
+
+.app.dark .date-item {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.app.dark .date-label {
+  color: #9ca3af;
+}
+
+.app.dark .date-value {
+  color: #f9fafb;
+}
+
+.app.dark .form-container {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+}
+
+.app.dark .form-container h2 {
+  color: #f9fafb;
+}
+
+.app.dark .form-group label {
+  color: #f9fafb;
+}
+
+.app.dark .form-group input {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+.app.dark .empty-state {
+  color: #9ca3af;
+}
+
+.app.dark .loading {
+  color: #9ca3af;
 }
 
 /* Responsive */
