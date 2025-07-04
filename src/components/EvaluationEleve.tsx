@@ -31,6 +31,8 @@ interface Evaluation {
   eleveId: string;
   periodeId: string;
   dateEvaluation: Date;
+  nomEntreprise: string;
+  domaineActivite: string;
       competences: {
       // CC1 - S'informer sur l'intervention ou la réalisation
       cc1_collecter_donnees: CompetenceEvaluation;
@@ -78,11 +80,14 @@ const EvaluationEleve: React.FC = () => {
   const [selectedClasse, setSelectedClasse] = useState<Classe | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentStep, setCurrentStep] = useState<'selection' | 'evaluation'>('selection');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   
   const [evaluation, setEvaluation] = useState<Evaluation>({
     eleveId: '',
     periodeId: '',
     dateEvaluation: new Date(),
+    nomEntreprise: '',
+    domaineActivite: '',
     competences: {
       cc1_collecter_donnees: { niveau: 'non_evaluee', commentaire: '' },
       cc2_ordonner_donnees: { niveau: 'non_evaluee', commentaire: '' },
@@ -210,6 +215,8 @@ const EvaluationEleve: React.FC = () => {
           ...evaluation,
           eleveId: selectedEleve,
           periodeId,
+          nomEntreprise: '',
+          domaineActivite: '',
           competences: {
             cc1_collecter_donnees: { niveau: 'non_evaluee' as NiveauEvaluation, commentaire: '' },
             cc2_ordonner_donnees: { niveau: 'non_evaluee' as NiveauEvaluation, commentaire: '' },
@@ -253,7 +260,7 @@ const EvaluationEleve: React.FC = () => {
     setCurrentStep('evaluation');
   };
 
-  const handleCompetenceChange = (competenceKey: keyof Evaluation['competences'], field: 'niveau' | 'commentaire', value: string) => {
+  const handleCompetenceChange = (competenceKey: keyof Evaluation['competences'], field: 'niveau', value: string) => {
     setEvaluation(prev => ({
       ...prev,
       competences: {
@@ -292,10 +299,30 @@ const EvaluationEleve: React.FC = () => {
     if (!dateString) return '';
     try {
       const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return dateString; // Retourne la chaîne originale si ce n'est pas une date valide
+      }
       return date.toLocaleDateString('fr-FR');
     } catch (error) {
-      console.error('Erreur de formatage de date:', error);
-      return dateString;
+      return dateString; // Retourne la chaîne originale en cas d'erreur
+    }
+  };
+
+  const formatBirthDate = (dateString?: string): string => {
+    if (!dateString) return 'Non renseigné';
+    try {
+      // Essayer de parser la date
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        // Si ce n'est pas une date valide, essayer de la formater si elle est au format YYYY-MM-DD
+        if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          return dateString.split('-').reverse().join('/');
+        }
+        return dateString; // Retourne la chaîne originale
+      }
+      return date.toLocaleDateString('fr-FR');
+    } catch (error) {
+      return dateString; // Retourne la chaîne originale en cas d'erreur
     }
   };
 
@@ -324,15 +351,6 @@ const EvaluationEleve: React.FC = () => {
         <div className="competence-header">
           <h4 className="competence-title">{title}</h4>
           {renderCompetenceSelect(competenceKey, competence.niveau)}
-        </div>
-        <div className="competence-content">
-          <textarea
-            value={competence.commentaire}
-            onChange={(e) => handleCompetenceChange(competenceKey, 'commentaire', e.target.value)}
-            placeholder="Commentaire optionnel..."
-            rows={2}
-            className="competence-textarea"
-          />
         </div>
       </div>
     );
@@ -378,6 +396,28 @@ const EvaluationEleve: React.FC = () => {
     return <div className="loading">Chargement...</div>;
   }
 
+  // Fonction pour normaliser le texte (supprimer les accents et convertir en minuscules)
+  const normalizeText = (text: string): string => {
+    return text
+      .normalize('NFD') // Décompose les caractères accentués
+      .replace(/[\u0300-\u036f]/g, '') // Supprime les diacritiques
+      .toLowerCase();
+  };
+
+  // Filtrer les élèves selon le terme de recherche
+  const filteredEleves = eleves.filter(eleve => {
+    const searchNormalized = normalizeText(searchTerm);
+    const nomNormalized = normalizeText(eleve.nom);
+    const prenomNormalized = normalizeText(eleve.prenom);
+    const fullNameNormalized = normalizeText(`${eleve.prenom} ${eleve.nom}`);
+    
+    return (
+      nomNormalized.includes(searchNormalized) ||
+      prenomNormalized.includes(searchNormalized) ||
+      fullNameNormalized.includes(searchNormalized)
+    );
+  });
+
   // Étape de sélection
   if (currentStep === 'selection') {
     return (
@@ -387,33 +427,63 @@ const EvaluationEleve: React.FC = () => {
           <p>Sélectionnez un élève pour commencer l'évaluation</p>
         </div>
 
+        <div className="search-section">
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Rechercher un élève (nom ou prénom)..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+            <span className="search-icon">🔍</span>
+          </div>
+          {searchTerm && (
+            <p className="search-results">
+              {filteredEleves.length} élève(s) trouvé(s) pour "{searchTerm}"
+            </p>
+          )}
+        </div>
+
         <div className="eleves-grid">
           {eleves.length === 0 ? (
             <div className="no-data">
               <p>Aucun élève trouvé.</p>
               <p>Veuillez d'abord aller dans "Gestion des Classes" pour ajouter des élèves.</p>
             </div>
+          ) : filteredEleves.length === 0 ? (
+            <div className="no-data">
+              <p>Aucun élève trouvé pour la recherche "{searchTerm}".</p>
+              <p>Essayez avec un autre terme de recherche.</p>
+            </div>
           ) : (
-            eleves.map(eleve => {
-              const classe = classes.find(c => c.id === eleve.classeId);
-              return (
-                <div key={eleve.id} className="eleve-tile">
-                  <div className="eleve-info" onClick={() => handleEleveSelect(eleve.id)}>
-                    <h3>{eleve.prenom} {eleve.nom}</h3>
-                    <p className="classe">Classe: {classe?.nom || 'Non assignée'}</p>
-                    <p className="naissance">Né(e) le: {eleve.dateNaissance ? new Date(eleve.dateNaissance).toLocaleDateString('fr-FR') : 'Non renseigné'}</p>
+            filteredEleves
+              .sort((a, b) => {
+                // Tri par nom puis par prénom
+                const nomComparison = a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' });
+                if (nomComparison !== 0) return nomComparison;
+                return a.prenom.localeCompare(b.prenom, 'fr', { sensitivity: 'base' });
+              })
+              .map(eleve => {
+                const classe = classes.find(c => c.id === eleve.classeId);
+                return (
+                  <div key={eleve.id} className="eleve-tile">
+                    <div className="eleve-info" onClick={() => handleEleveSelect(eleve.id)}>
+                      <h3>{eleve.prenom} {eleve.nom.toUpperCase()}</h3>
+                      <p className="classe">Classe: {classe?.nom || 'Non assignée'}</p>
+                      <p className="naissance">Né(e) le: {formatBirthDate(eleve.dateNaissance)}</p>
+                    </div>
+                    <div className="eleve-actions">
+                      <button 
+                        className="btn-evaluer"
+                        onClick={() => handleEleveSelect(eleve.id)}
+                      >
+                        Évaluer →
+                      </button>
+                    </div>
                   </div>
-                  <div className="eleve-actions">
-                    <button 
-                      className="btn-evaluer"
-                      onClick={() => handleEleveSelect(eleve.id)}
-                    >
-                      Évaluer →
-                    </button>
-                  </div>
-                </div>
-              );
-            })
+                );
+              })
           )}
         </div>
       </div>
@@ -431,7 +501,7 @@ const EvaluationEleve: React.FC = () => {
           ← Retour à la sélection
         </button>
         <div className="eleve-selected">
-          <h1>Évaluation de {selectedEleveData?.prenom} {selectedEleveData?.nom}</h1>
+          <h1>Évaluation de {selectedEleveData?.prenom} {selectedEleveData?.nom.toUpperCase()}</h1>
           <p className="classe-info">Classe: {selectedClasse?.nom}</p>
         </div>
       </div>
@@ -471,6 +541,35 @@ const EvaluationEleve: React.FC = () => {
 
         {evaluation.periodeId && (
           <>
+            {/* Informations de l'entreprise */}
+            <div className="entreprise-section">
+              <h2>Informations de l'entreprise</h2>
+              <div className="entreprise-grid">
+                <div className="form-group">
+                  <label htmlFor="nomEntreprise">Nom de l'entreprise</label>
+                  <input
+                    type="text"
+                    id="nomEntreprise"
+                    value={evaluation.nomEntreprise}
+                    onChange={(e) => setEvaluation({...evaluation, nomEntreprise: e.target.value})}
+                    placeholder="Nom de l'entreprise d'accueil"
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="domaineActivite">Domaine d'activité</label>
+                  <input
+                    type="text"
+                    id="domaineActivite"
+                    value={evaluation.domaineActivite}
+                    onChange={(e) => setEvaluation({...evaluation, domaineActivite: e.target.value})}
+                    placeholder="Domaine d'activité de l'entreprise"
+                    className="form-input"
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* CC1 - S'informer sur l'intervention ou la réalisation */}
             <div className="competence-section">
               <h2>CC1 - S'informer sur l'intervention ou la réalisation</h2>

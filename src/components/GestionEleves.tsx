@@ -172,6 +172,24 @@ const GestionEleves: React.FC = () => {
     }
   };
 
+  const formatBirthDate = (dateString?: string): string => {
+    if (!dateString) return 'Non renseignée';
+    try {
+      // Essayer de parser la date
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        // Si ce n'est pas une date valide, essayer de la formater si elle est au format YYYY-MM-DD
+        if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          return dateString.split('-').reverse().join('/');
+        }
+        return dateString; // Retourne la chaîne originale
+      }
+      return date.toLocaleDateString('fr-FR');
+    } catch (error) {
+      return dateString; // Retourne la chaîne originale en cas d'erreur
+    }
+  };
+
   if (loading) {
     return <div className="loading">Chargement des élèves...</div>;
   }
@@ -263,7 +281,7 @@ const GestionEleves: React.FC = () => {
                 <h3>{eleve.prenom} {eleve.nom}</h3>
                 <p>Classe : {classes.find(c => c.id === eleve.classeId)?.nom || 'Inconnue'}</p>
                 <p>Email : {eleve.email || 'Non renseigné'}</p>
-                <p>Date de naissance : {eleve.dateNaissance || 'Non renseignée'}</p>
+                <p>Date de naissance : {formatBirthDate(eleve.dateNaissance)}</p>
                 <p>Créé le {(() => {
                   let date = eleve.createdAt;
                   if (!(date instanceof Date)) date = new Date(date);

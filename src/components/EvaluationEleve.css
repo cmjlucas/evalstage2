@@ -2,6 +2,9 @@
   padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
+  background: #1a1a1a;
+  min-height: 100vh;
+  color: #f9fafb;
 }
 
 .header {
@@ -10,12 +13,13 @@
   gap: 20px;
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 2px solid #3a3a3a;
 }
 
 .btn-retour {
-  background: #f5f5f5;
-  border: 1px solid #ddd;
+  background: #374151;
+  border: 1px solid #4b5563;
+  color: #f9fafb;
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
@@ -24,20 +28,71 @@
 }
 
 .btn-retour:hover {
-  background: #e0e0e0;
+  background: #4b5563;
   transform: translateX(-2px);
 }
 
 .eleve-selected h1 {
   margin: 0;
-  color: #333;
+  color: #f9fafb;
   font-size: 24px;
 }
 
 .classe-info {
-  color: #666;
+  color: #d1d5db;
   font-size: 16px;
   margin: 5px 0 0 0;
+}
+
+/* Zone de recherche */
+.search-section {
+  margin-bottom: 30px;
+}
+
+.search-box {
+  position: relative;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.search-input {
+  width: 100%;
+  padding: 15px 50px 15px 20px;
+  border: 2px solid #374151;
+  border-radius: 25px;
+  background: #2a2a2a;
+  color: #f9fafb;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+.search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.search-results {
+  text-align: center;
+  margin-top: 15px;
+  color: #d1d5db;
+  font-size: 14px;
+  font-style: italic;
 }
 
 /* Grille des élèves */
@@ -101,17 +156,17 @@
 
 /* Sélection des périodes */
 .periode-selection-tile {
-  background: white;
-  border: 1px solid #e0e0e0;
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
   border-radius: 12px;
   padding: 25px;
   margin-bottom: 25px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .periode-selection-tile h2 {
   margin: 0 0 20px 0;
-  color: #333;
+  color: #f9fafb;
   font-size: 20px;
 }
 
@@ -122,8 +177,8 @@
 }
 
 .periode-tile {
-  background: #f8f9fa;
-  border: 2px solid #e0e0e0;
+  background: #374151;
+  border: 2px solid #4b5563;
   border-radius: 8px;
   padding: 20px;
   cursor: pointer;
@@ -132,69 +187,126 @@
 }
 
 .periode-tile:hover {
-  border-color: #4CAF50;
+  border-color: #38bdf8;
   transform: translateY(-2px);
+  background: #4b5563;
 }
 
 .periode-tile.selected {
-  border-color: #4CAF50;
-  background: #e8f5e8;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  border-color: #38bdf8;
+  background: #1e40af;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
 }
 
 .periode-tile h3 {
   margin: 0 0 10px 0;
-  color: #333;
+  color: #f9fafb;
   font-size: 16px;
   font-weight: 600;
 }
 
 .periode-tile p {
   margin: 0;
-  color: #666;
+  color: #d1d5db;
   font-size: 14px;
+}
+
+/* Section entreprise */
+.entreprise-section {
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.entreprise-section h2 {
+  margin: 0 0 20px 0;
+  color: #f9fafb;
+  font-size: 20px;
+  border-left: 4px solid #fbbf24;
+  padding-left: 15px;
+}
+
+.entreprise-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  color: #f9fafb;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.form-input {
+  padding: 12px 16px;
+  border: 1px solid #4b5563;
+  border-radius: 6px;
+  background: #374151;
+  color: #f9fafb;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
 }
 
 /* Sections de compétences */
 .competence-section {
-  background: white;
-  border: 1px solid #e0e0e0;
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
   border-radius: 12px;
   padding: 25px;
   margin-bottom: 25px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .competence-section h2 {
   margin: 0 0 20px 0;
-  color: #333;
+  color: #f9fafb;
   font-size: 20px;
-  border-left: 4px solid #4CAF50;
+  border-left: 4px solid #38bdf8;
   padding-left: 15px;
 }
 
 .competences-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 20px;
 }
 
 .competence-tile {
-  background: #f8f9fa;
-  border: 1px solid #e0e0e0;
+  background: #374151;
+  border: 1px solid #4b5563;
   border-radius: 8px;
   padding: 20px;
   transition: all 0.3s ease;
 }
 
 .competence-tile:hover {
-  border-color: #4CAF50;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-color: #38bdf8;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.1);
 }
 
 .competence-tile h4 {
   margin: 0 0 15px 0;
-  color: #333;
+  color: #f9fafb;
   font-size: 16px;
   font-weight: 600;
 }
@@ -203,10 +315,11 @@
 .competence-select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #4b5563;
   border-radius: 6px;
   font-size: 14px;
-  background: white;
+  background: #374151;
+  color: #f9fafb;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -214,13 +327,14 @@
   padding: 8px 12px;
   font-size: 14px;
   line-height: 1.5;
-  background: white;
+  background: #374151;
+  color: #f9fafb;
 }
 
 .competence-tile select:focus {
   outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
 }
 
 /* Code couleur pour les niveaux d'évaluation */
@@ -261,61 +375,41 @@
 
 /* Non évaluée - Bleu */
 .competence-tile select[data-niveau="non_evaluee"] {
-  background-color: #e3f2fd;
-  border-color: #2196f3;
-  color: #1976d2;
+  background-color: #1e3a8a;
+  border-color: #3b82f6;
+  color: #93c5fd;
 }
 
 /* Non acquise - Rouge */
 .competence-tile select[data-niveau="non_acquise"] {
-  background-color: #ffebee;
-  border-color: #f44336;
-  color: #d32f2f;
+  background-color: #7f1d1d;
+  border-color: #dc2626;
+  color: #fca5a5;
 }
 
 /* En cours d'acquisition - Orange */
 .competence-tile select[data-niveau="en_cours"] {
-  background-color: #fff3e0;
-  border-color: #ff9800;
-  color: #f57c00;
+  background-color: #92400e;
+  border-color: #f59e0b;
+  color: #fbbf24;
 }
 
 /* Partiellement acquise - Vert clair */
 .competence-tile select[data-niveau="partiellement_acquise"] {
-  background-color: #f1f8e9;
-  border-color: #8bc34a;
-  color: #689f38;
+  background-color: #166534;
+  border-color: #22c55e;
+  color: #86efac;
 }
 
 /* Acquise - Vert foncé */
 .competence-tile select[data-niveau="acquise"] {
-  background-color: #e8f5e8;
-  border-color: #4caf50;
-  color: #388e3c;
+  background-color: #14532d;
+  border-color: #16a34a;
+  color: #bbf7d0;
   font-weight: 600;
 }
 
-.competence-tile textarea {
-  width: 100%;
-  min-height: 60px;
-  max-height: 120px;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 13px;
-  resize: vertical;
-  font-family: inherit;
-}
 
-.competence-tile textarea:focus {
-  outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
-}
-
-.competence-tile textarea::placeholder {
-  color: #999;
-}
 
 /* Section commentaires */
 .commentaires-section {
@@ -326,16 +420,16 @@
 }
 
 .commentaire-tile {
-  background: white;
-  border: 1px solid #e0e0e0;
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
   border-radius: 12px;
   padding: 25px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .commentaire-tile h3 {
   margin: 0 0 15px 0;
-  color: #333;
+  color: #f9fafb;
   font-size: 18px;
 }
 
@@ -344,17 +438,23 @@
   min-height: 100px;
   max-height: 200px;
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #4b5563;
   border-radius: 8px;
   font-size: 14px;
   resize: vertical;
   font-family: inherit;
+  background: #374151;
+  color: #f9fafb;
 }
 
 .commentaire-tile textarea:focus {
   outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+.commentaire-tile textarea::placeholder {
+  color: #9ca3af;
 }
 
 /* Actions du formulaire */
@@ -364,8 +464,8 @@
 }
 
 .btn-primary {
-  background: #4CAF50;
-  color: white;
+  background: #38bdf8;
+  color: #1a1a1a;
   border: none;
   padding: 15px 30px;
   border-radius: 8px;
@@ -377,9 +477,9 @@
 }
 
 .btn-primary:hover {
-  background: #45a049;
+  background: #0ea5e9;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
 }
 
 .btn-primary:active {
@@ -391,18 +491,14 @@
   text-align: center;
   padding: 40px;
   font-size: 18px;
-  color: #666;
+  color: #d1d5db;
 }
 
-/* No data message */
+/* No data */
 .no-data {
-  grid-column: 1 / -1;
   text-align: center;
-  padding: 40px;
-  background: #f8f9fa;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  color: #666;
+  padding: 60px 20px;
+  color: #9ca3af;
 }
 
 .no-data p {
@@ -411,8 +507,9 @@
 }
 
 .no-data p:first-child {
+  font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: #d1d5db;
 }
 
 /* Responsive */
@@ -441,6 +538,24 @@
   
   .periodes-grid {
     grid-template-columns: 1fr;
+  }
+
+  .entreprise-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-box {
+    max-width: 100%;
+  }
+
+  .search-input {
+    padding: 12px 45px 12px 15px;
+    font-size: 14px;
+  }
+
+  .search-icon {
+    right: 12px;
+    font-size: 18px;
   }
 }
 

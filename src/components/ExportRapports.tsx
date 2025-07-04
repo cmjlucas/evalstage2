@@ -30,6 +30,8 @@ interface Evaluation {
   eleveId: string;
   periodeId: string;
   dateEvaluation: Date;
+  nomEntreprise: string;
+  domaineActivite: string;
   competences: {
     cc1_collecter_donnees: { niveau: string; commentaire: string };
     cc2_ordonner_donnees: { niveau: string; commentaire: string };
@@ -184,6 +186,183 @@ const ExportRapports: React.FC = () => {
     pdf.rect(x, y - squareSize/2, squareSize, squareSize, 'F');
   };
 
+  const drawEvaluationTable = (pdf: jsPDF, yPosition: number, evaluation: any) => {
+    const tableStartY = yPosition;
+    const rowHeight = 6;
+    const colWidths = [100, 12, 12, 12, 12, 12]; // Largeurs des colonnes
+    let x = 15;
+    
+    // En-têtes du tableau
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(8);
+    
+    // Dessiner les bordures d'en-tête
+    pdf.rect(x, tableStartY, colWidths[0], rowHeight); // Critères d'évaluation
+    pdf.rect(x + colWidths[0], tableStartY, colWidths[1], rowHeight); // Non évaluée
+    pdf.rect(x + colWidths[0] + colWidths[1], tableStartY, colWidths[2], rowHeight); // Non acquise
+    pdf.rect(x + colWidths[0] + colWidths[1] + colWidths[2], tableStartY, colWidths[3], rowHeight); // En cours
+    pdf.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], tableStartY, colWidths[4], rowHeight); // Partiellement acquise
+    pdf.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], tableStartY, colWidths[5], rowHeight); // Acquise
+    
+    // Texte des en-têtes
+    pdf.text('Critères d\'évaluation', x + 2, tableStartY + 4);
+    
+    // Colorier les en-têtes des colonnes d'évaluation
+    pdf.setFillColor(200, 200, 200); // Gris
+    pdf.rect(x + colWidths[0], tableStartY, colWidths[1], rowHeight, 'F');
+    
+    pdf.setFillColor(255, 68, 68); // Rouge
+    pdf.rect(x + colWidths[0] + colWidths[1], tableStartY, colWidths[2], rowHeight, 'F');
+    
+    pdf.setFillColor(255, 136, 0); // Orange
+    pdf.rect(x + colWidths[0] + colWidths[1] + colWidths[2], tableStartY, colWidths[3], rowHeight, 'F');
+    
+    pdf.setFillColor(255, 170, 0); // Jaune
+    pdf.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], tableStartY, colWidths[4], rowHeight, 'F');
+    
+    pdf.setFillColor(0, 170, 68); // Vert
+    pdf.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], tableStartY, colWidths[5], rowHeight, 'F');
+    
+    // Ajouter les en-têtes des colonnes d'évaluation
+    pdf.setFontSize(6);
+    pdf.text('Non', x + colWidths[0] + 1, tableStartY + 2);
+    pdf.text('évaluée', x + colWidths[0] + 1, tableStartY + 5);
+    
+    pdf.text('Non', x + colWidths[0] + colWidths[1] + 1, tableStartY + 2);
+    pdf.text('acquise', x + colWidths[0] + colWidths[1] + 1, tableStartY + 5);
+    
+    pdf.text('En cours', x + colWidths[0] + colWidths[1] + colWidths[2] + 1, tableStartY + 2);
+    pdf.text('d\'acquisit.', x + colWidths[0] + colWidths[1] + colWidths[2] + 1, tableStartY + 5);
+    
+    pdf.text('Partiel.', x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 1, tableStartY + 2);
+    pdf.text('acquise', x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 1, tableStartY + 5);
+    
+    pdf.text('Acquise', x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 1, tableStartY + 4);
+    
+    // Redessiner les bordures après le remplissage
+    pdf.rect(x, tableStartY, colWidths[0], rowHeight);
+    pdf.rect(x + colWidths[0], tableStartY, colWidths[1], rowHeight);
+    pdf.rect(x + colWidths[0] + colWidths[1], tableStartY, colWidths[2], rowHeight);
+    pdf.rect(x + colWidths[0] + colWidths[1] + colWidths[2], tableStartY, colWidths[3], rowHeight);
+    pdf.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], tableStartY, colWidths[4], rowHeight);
+    pdf.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], tableStartY, colWidths[5], rowHeight);
+    
+    let currentY = tableStartY + rowHeight;
+    
+    // Définir les compétences et leurs sous-compétences
+    const competencesData = [
+      {
+        section: 'CC1 - S\'informer sur l\'intervention ou la réalisation',
+        competences: [
+          { key: 'cc1_collecter_donnees', label: 'Collecter les données nécessaires à l\'intervention' }
+        ]
+      },
+      {
+        section: 'CC2 - Organiser la réalisation ou l\'intervention',
+        competences: [
+          { key: 'cc2_ordonner_donnees', label: 'Ordonner les données nécessaires' },
+          { key: 'cc2_reperer_contraintes', label: 'Repérer les contraintes énergétiques' }
+        ]
+      },
+      {
+        section: 'CC3 - Analyser et exploiter les données',
+        competences: [
+          { key: 'cc3_identifier_elements', label: 'Identifier les éléments du système' },
+          { key: 'cc3_identifier_grandeurs', label: 'Identifier les grandeurs physiques' },
+          { key: 'cc3_representer_installation', label: 'Représenter l\'installation' }
+        ]
+      },
+      {
+        section: 'CC4 - Réaliser une installation ou une intervention',
+        competences: [
+          { key: 'cc4_implanter_cabler', label: 'Implanter, câbler les matériels' },
+          { key: 'cc4_realiser_installation', label: 'Réaliser l\'installation' },
+          { key: 'cc4_operer_attitude', label: 'Opérer avec attitude écoresponsable' }
+        ]
+      },
+      {
+        section: 'CC7 - Établir un pré-diagnostic à distance',
+        competences: [
+          { key: 'cc7_controler_donnees', label: 'Contrôler les données d\'exploitation' },
+          { key: 'cc7_constater_defaillance', label: 'Constater la défaillance' },
+          { key: 'cc7_lister_hypotheses', label: 'Lister les hypothèses de panne' }
+        ]
+      },
+      {
+        section: 'CC8 - Renseigner les documents',
+        competences: [
+          { key: 'cc8_completer_documents', label: 'Compléter les documents techniques' },
+          { key: 'cc8_expliquer_avancement', label: 'Expliquer l\'avancement des opérations' },
+          { key: 'cc8_rediger_compte_rendu', label: 'Rédiger un compte-rendu' }
+        ]
+      },
+      {
+        section: 'CC9 - Communiquer avec le client et/ou l\'usager',
+        competences: [
+          { key: 'cc9_interpreter_informations', label: 'Interpréter les informations du client' },
+          { key: 'cc9_expliquer_fonctionnement', label: 'Expliquer le fonctionnement' },
+          { key: 'cc9_informer_consignes', label: 'Informer des consignes de sécurité' }
+        ]
+      }
+    ];
+    
+    // Dessiner les lignes du tableau
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(7);
+    
+    competencesData.forEach(section => {
+      section.competences.forEach(competence => {
+        const niveau = evaluation.competences[competence.key]?.niveau || 'non_evaluee';
+        
+        // Dessiner la ligne
+        pdf.rect(x, currentY, colWidths[0], rowHeight);
+        pdf.rect(x + colWidths[0], currentY, colWidths[1], rowHeight);
+        pdf.rect(x + colWidths[0] + colWidths[1], currentY, colWidths[2], rowHeight);
+        pdf.rect(x + colWidths[0] + colWidths[1] + colWidths[2], currentY, colWidths[3], rowHeight);
+        pdf.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], currentY, colWidths[4], rowHeight);
+        pdf.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], currentY, colWidths[5], rowHeight);
+        
+        // Texte de la compétence
+        const lines = pdf.splitTextToSize(competence.label, colWidths[0] - 4);
+        pdf.text(lines, x + 2, currentY + 3);
+        
+        // Marquer la case correspondante selon le niveau
+        let caseX = x + colWidths[0] + 2;
+        
+        switch (niveau) {
+          case 'non_evaluee':
+            pdf.setFillColor(200, 200, 200);
+            pdf.rect(caseX, currentY + 1, colWidths[1] - 4, 4, 'F');
+            break;
+          case 'non_acquise':
+            caseX += colWidths[1];
+            pdf.setFillColor(255, 68, 68);
+            pdf.rect(caseX + 2, currentY + 1, colWidths[2] - 4, 4, 'F');
+            break;
+          case 'en_cours':
+            caseX += colWidths[1] + colWidths[2];
+            pdf.setFillColor(255, 136, 0);
+            pdf.rect(caseX + 2, currentY + 1, colWidths[3] - 4, 4, 'F');
+            break;
+          case 'partiellement_acquise':
+            caseX += colWidths[1] + colWidths[2] + colWidths[3];
+            pdf.setFillColor(255, 170, 0);
+            pdf.rect(caseX + 2, currentY + 1, colWidths[4] - 4, 4, 'F');
+            break;
+          case 'acquise':
+            caseX += colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4];
+            pdf.setFillColor(0, 170, 68);
+            pdf.rect(caseX + 2, currentY + 1, colWidths[5] - 4, 4, 'F');
+            break;
+        }
+        
+        currentY += rowHeight;
+      });
+    });
+    
+    return currentY;
+  };
+
   const exportToPDF = () => {
     if (!selectedEleve || !selectedPeriode) return;
 
@@ -196,243 +375,140 @@ const ExportRapports: React.FC = () => {
 
     const pdf = new jsPDF();
     const pageWidth = pdf.internal.pageSize.width;
-    let yPosition = 20;
+    let yPosition = 15;
 
-    // En-tête
+    // En-tête avec logo (si disponible)
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('SECONDE MÉTIERS DES TRANSITIONS NUMÉRIQUE ET ÉNERGÉTIQUE', 15, yPosition);
+    yPosition += 10;
+
+    // Cadre titre
+    pdf.setFillColor(210, 180, 210); // Fond violet clair
+    pdf.rect(15, yPosition, pageWidth - 30, 15, 'F');
+    pdf.rect(15, yPosition, pageWidth - 30, 15); // Bordure
+    
     pdf.setFontSize(12);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('Document de suivi et d\'évaluation :', 15, yPosition);
-    yPosition += 6;
-    pdf.text('Situations de travail spécifiées et réalisées en milieu professionnel', 15, yPosition);
-    yPosition += 15;
+    pdf.text('Document de suivi et d\'évaluation :', 20, yPosition + 6);
+    pdf.text('Situations de travail spécifiées et réalisées en milieu professionnel', 20, yPosition + 12);
+    yPosition += 25;
 
-    // Titre PFMP
+    // Titre PFMP dans un cadre
+    pdf.rect(15, yPosition, 100, 15);
     pdf.setFontSize(16);
-    const title = `PFMP N° ${periode.nom}`;
-    pdf.text(title, (pageWidth - pdf.getTextWidth(title)) / 2, yPosition);
-    yPosition += 10;
-
-    // Dates
-    pdf.setFontSize(10);
-    pdf.setFont('helvetica', 'normal');
-    const dateText = `Du ${formatDateFromString(periode.dateDebut)} au ${formatDateFromString(periode.dateFin)}`;
-    pdf.text(dateText, pageWidth - 15 - pdf.getTextWidth(dateText), yPosition);
-    yPosition += 15;
-
-    // Candidat
-    pdf.setFontSize(12);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('NOM, PRÉNOM DU CANDIDAT', 15, yPosition);
+    pdf.text(`PFMP N° ${periode.nom.replace('PFMP', '').replace('-', '').trim()}`, 20, yPosition + 10);
+    
+    // Dates à droite
+    pdf.rect(pageWidth - 80, yPosition, 65, 15);
+    pdf.setFontSize(10);
+    pdf.text(`Du ${formatDateFromString(periode.dateDebut)}`, pageWidth - 75, yPosition + 6);
+    pdf.text(`au ${formatDateFromString(periode.dateFin)}`, pageWidth - 75, yPosition + 12);
+    yPosition += 25;
+
+    // Nom du candidat
+    pdf.rect(15, yPosition, pageWidth - 30, 8);
+    pdf.setFontSize(8);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('NOM - PRÉNOM DU CANDIDAT', 20, yPosition + 6);
     yPosition += 8;
+
+    pdf.rect(15, yPosition, pageWidth - 30, 12);
     pdf.setFontSize(14);
-    pdf.text(`${eleve.nom.toUpperCase()}–${eleve.prenom}`, 15, yPosition);
-    yPosition += 10;
-
-    pdf.setFontSize(10);
-    pdf.text(`Classe: ${classe?.nom || 'Non assignée'}`, 15, yPosition);
-    yPosition += 15;
-
-    // Compétences
-    pdf.setFontSize(12);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('ÉVALUATION DES COMPÉTENCES ACQUISES EN PFMP :', 15, yPosition);
-    yPosition += 10;
+    pdf.text(`${eleve.nom.toUpperCase()}--${eleve.prenom}`, 20, yPosition + 8);
+    yPosition += 12;
 
+    // Dénomination et secteur
+    pdf.rect(15, yPosition, pageWidth - 30, 8);
     pdf.setFontSize(8);
     pdf.setFont('helvetica', 'normal');
-    pdf.text('Critères d\'évaluation : 1-Non acquise, 2-En cours, 3-Partiellement acquise, 4-Acquise', 15, yPosition);
-    yPosition += 5;
+    pdf.text('Dénomination et secteur d\'activité du milieu professionnel de formation', 20, yPosition + 6);
+    yPosition += 8;
+
+    // Espace pour l'entreprise
+    pdf.rect(15, yPosition, pageWidth - 30, 15);
+    if (evaluation && evaluation.nomEntreprise) {
+      pdf.setFontSize(10);
+      pdf.text(`${evaluation.nomEntreprise}`, 20, yPosition + 6);
+      if (evaluation.domaineActivite) {
+        pdf.text(`${evaluation.domaineActivite}`, 20, yPosition + 12);
+      }
+    }
+    yPosition += 25;
+
+    // Titre évaluation compétences
+    pdf.setFillColor(200, 200, 200); // Fond gris
+    pdf.rect(15, yPosition, pageWidth - 30, 8, 'F');
+    pdf.rect(15, yPosition, pageWidth - 30, 8); // Bordure
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('ÉVALUATION DES COMPÉTENCES ACQUISES EN PFMP', 20, yPosition + 6);
+    yPosition += 15;
+
+    // Légende explicative
+    pdf.setFontSize(8);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Liste des compétences pouvant être évaluées en', 15, yPosition);
+    pdf.text('seconde MTNE', 15, yPosition + 4);
+    pdf.text('Pour évaluer, remplir la case', 15, yPosition + 8);
+    pdf.text('correspondante avec une croix', 15, yPosition + 12);
+    yPosition += 20;
 
     // Légende des couleurs
     pdf.setFontSize(7);
-    pdf.text('Légende :', 15, yPosition);
-    yPosition += 3;
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Légende des couleurs :', 15, yPosition);
+    yPosition += 5;
     
-    // Carré gris (non évaluée)
-    drawColoredSquare(pdf, 15, yPosition, 'non_evaluee');
-    pdf.text('Non évaluée', 23, yPosition);
+    pdf.setFont('helvetica', 'normal');
+    // Carré gris
+    pdf.setFillColor(200, 200, 200);
+    pdf.rect(15, yPosition, 4, 4, 'F');
+    pdf.text('Non évaluée', 22, yPosition + 3);
     
-    // Carré rouge (non acquise)
-    drawColoredSquare(pdf, 55, yPosition, 'non_acquise');
-    pdf.text('Non acquise', 63, yPosition);
+    // Carré rouge
+    pdf.setFillColor(255, 68, 68);
+    pdf.rect(60, yPosition, 4, 4, 'F');
+    pdf.text('Non acquise', 67, yPosition + 3);
     
-    // Carré orange (en cours)
-    drawColoredSquare(pdf, 95, yPosition, 'en_cours');
-    pdf.text('En cours', 103, yPosition);
+    // Carré orange
+    pdf.setFillColor(255, 136, 0);
+    pdf.rect(110, yPosition, 4, 4, 'F');
+    pdf.text('En cours', 117, yPosition + 3);
     
-    // Carré jaune (partiellement acquise)
-    drawColoredSquare(pdf, 125, yPosition, 'partiellement_acquise');
-    pdf.text('Partiellement acquise', 133, yPosition);
+    // Carré jaune
+    pdf.setFillColor(255, 170, 0);
+    pdf.rect(150, yPosition, 4, 4, 'F');
+    pdf.text('Partiel. acquise', 157, yPosition + 3);
     
-    // Carré vert (acquise)
-    drawColoredSquare(pdf, 175, yPosition, 'acquise');
-    pdf.text('Acquise', 183, yPosition);
+    yPosition += 5;
     
-    yPosition += 8;
+    // Carré vert
+    pdf.setFillColor(0, 170, 68);
+    pdf.rect(15, yPosition, 4, 4, 'F');
+    pdf.text('Acquise', 22, yPosition + 3);
+    
+    yPosition += 10;
 
     if (evaluation) {
-      // CC1
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('CC1 - S\'informer sur l\'intervention', 15, yPosition);
-      yPosition += 5;
-      pdf.setFont('helvetica', 'normal');
-      
-      // Dessiner le carré coloré et le texte pour CC1
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc1_collecter_donnees.niveau);
-      const cc1 = getNiveauSymbol(evaluation.competences.cc1_collecter_donnees.niveau);
-      pdf.text(`Collecter les données [${cc1}]`, 28, yPosition);
-      yPosition += 8;
+      // Dessiner le tableau d'évaluation
+      yPosition = drawEvaluationTable(pdf, yPosition, evaluation);
+      yPosition += 10;
 
-      // CC2
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('CC2 - Organiser la réalisation', 15, yPosition);
-      yPosition += 5;
-      pdf.setFont('helvetica', 'normal');
-      
-      // CC2.1
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc2_ordonner_donnees.niveau);
-      const cc2_1 = getNiveauSymbol(evaluation.competences.cc2_ordonner_donnees.niveau);
-      pdf.text(`Ordonner les données [${cc2_1}]`, 28, yPosition);
-      yPosition += 4;
-      
-      // CC2.2
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc2_reperer_contraintes.niveau);
-      const cc2_2 = getNiveauSymbol(evaluation.competences.cc2_reperer_contraintes.niveau);
-      pdf.text(`Repérer les contraintes [${cc2_2}]`, 28, yPosition);
-      yPosition += 8;
-
-      // CC3
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('CC3 - Analyser et exploiter les données', 15, yPosition);
-      yPosition += 5;
-      pdf.setFont('helvetica', 'normal');
-      
-      // CC3.1
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc3_identifier_elements.niveau);
-      const cc3_1 = getNiveauSymbol(evaluation.competences.cc3_identifier_elements.niveau);
-      pdf.text(`Identifier les éléments [${cc3_1}]`, 28, yPosition);
-      yPosition += 4;
-      
-      // CC3.2
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc3_identifier_grandeurs.niveau);
-      const cc3_2 = getNiveauSymbol(evaluation.competences.cc3_identifier_grandeurs.niveau);
-      pdf.text(`Identifier les grandeurs physiques [${cc3_2}]`, 28, yPosition);
-      yPosition += 4;
-      
-      // CC3.3
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc3_representer_installation.niveau);
-      const cc3_3 = getNiveauSymbol(evaluation.competences.cc3_representer_installation.niveau);
-      pdf.text(`Représenter l'installation [${cc3_3}]`, 28, yPosition);
-      yPosition += 8;
-
-      // CC4
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('CC4 - Réaliser une installation', 15, yPosition);
-      yPosition += 5;
-      pdf.setFont('helvetica', 'normal');
-      
-      // CC4.1
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc4_implanter_cabler.niveau);
-      const cc4_1 = getNiveauSymbol(evaluation.competences.cc4_implanter_cabler.niveau);
-      pdf.text(`Implanter, câbler [${cc4_1}]`, 28, yPosition);
-      yPosition += 4;
-      
-      // CC4.2
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc4_realiser_installation.niveau);
-      const cc4_2 = getNiveauSymbol(evaluation.competences.cc4_realiser_installation.niveau);
-      pdf.text(`Réaliser l'installation [${cc4_2}]`, 28, yPosition);
-      yPosition += 4;
-      
-      // CC4.3
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc4_operer_attitude.niveau);
-      const cc4_3 = getNiveauSymbol(evaluation.competences.cc4_operer_attitude.niveau);
-      pdf.text(`Opérer dans une attitude écoresponsable [${cc4_3}]`, 28, yPosition);
-      yPosition += 8;
-
-      // CC7
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('CC7 - Établir un pré-diagnostic (MAINTENANCE)', 15, yPosition);
-      yPosition += 5;
-      pdf.setFont('helvetica', 'normal');
-      
-      // CC7.1
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc7_controler_donnees.niveau);
-      const cc7_1 = getNiveauSymbol(evaluation.competences.cc7_controler_donnees.niveau);
-      pdf.text(`Contrôler les données [${cc7_1}]`, 28, yPosition);
-      yPosition += 4;
-      
-      // CC7.2
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc7_constater_defaillance.niveau);
-      const cc7_2 = getNiveauSymbol(evaluation.competences.cc7_constater_defaillance.niveau);
-      pdf.text(`Constater les défaillances [${cc7_2}]`, 28, yPosition);
-      yPosition += 4;
-      
-      // CC7.3
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc7_lister_hypotheses.niveau);
-      const cc7_3 = getNiveauSymbol(evaluation.competences.cc7_lister_hypotheses.niveau);
-      pdf.text(`Lister les hypothèses [${cc7_3}]`, 28, yPosition);
-      yPosition += 8;
-
-      // CC8
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('CC8 - Renseigner les documents (COMMUNICATION)', 15, yPosition);
-      yPosition += 5;
-      pdf.setFont('helvetica', 'normal');
-      
-      // CC8.1
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc8_completer_documents.niveau);
-      const cc8_1 = getNiveauSymbol(evaluation.competences.cc8_completer_documents.niveau);
-      pdf.text(`Compléter les documents [${cc8_1}]`, 28, yPosition);
-      yPosition += 4;
-      
-      // CC8.2
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc8_expliquer_avancement.niveau);
-      const cc8_2 = getNiveauSymbol(evaluation.competences.cc8_expliquer_avancement.niveau);
-      pdf.text(`Expliquer l'avancement [${cc8_2}]`, 28, yPosition);
-      yPosition += 4;
-      
-      // CC8.3
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc8_rediger_compte_rendu.niveau);
-      const cc8_3 = getNiveauSymbol(evaluation.competences.cc8_rediger_compte_rendu.niveau);
-      pdf.text(`Rédiger un compte rendu [${cc8_3}]`, 28, yPosition);
-      yPosition += 8;
-
-      // CC9
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('CC9 - Communiquer avec le client et/ou l\'usager', 15, yPosition);
-      yPosition += 5;
-      pdf.setFont('helvetica', 'normal');
-      
-      // CC9.1
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc9_interpreter_informations.niveau);
-      const cc9_1 = getNiveauSymbol(evaluation.competences.cc9_interpreter_informations.niveau);
-      pdf.text(`Interpréter les informations [${cc9_1}]`, 28, yPosition);
-      yPosition += 4;
-      
-      // CC9.2
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc9_expliquer_fonctionnement.niveau);
-      const cc9_2 = getNiveauSymbol(evaluation.competences.cc9_expliquer_fonctionnement.niveau);
-      pdf.text(`Expliquer le fonctionnement [${cc9_2}]`, 28, yPosition);
-      yPosition += 4;
-      
-      // CC9.3
-      drawColoredSquare(pdf, 20, yPosition, evaluation.competences.cc9_informer_consignes.niveau);
-      const cc9_3 = getNiveauSymbol(evaluation.competences.cc9_informer_consignes.niveau);
-      pdf.text(`Informer sur les consignes [${cc9_3}]`, 28, yPosition);
-      yPosition += 12;
-
-      // Commentaires
+      // Commentaires et observations
       if (evaluation.commentaireGeneral || evaluation.recommandations) {
         pdf.setFont('helvetica', 'bold');
         pdf.text('OBSERVATIONS :', 15, yPosition);
         yPosition += 8;
         
         pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(9);
         if (evaluation.commentaireGeneral) {
           const commentaireLines = pdf.splitTextToSize(evaluation.commentaireGeneral, pageWidth - 30);
           pdf.text(commentaireLines, 15, yPosition);
-          yPosition += commentaireLines.length * 5 + 5;
+          yPosition += commentaireLines.length * 4 + 5;
         }
         
         if (evaluation.recommandations) {
@@ -446,13 +522,12 @@ const ExportRapports: React.FC = () => {
       }
     }
 
-    // Signature
-    yPosition = pdf.internal.pageSize.height - 40;
+    // Signature en bas de page
+    const signatureY = pdf.internal.pageSize.height - 30;
     pdf.setFontSize(10);
     pdf.setFont('helvetica', 'normal');
-    pdf.text('Date et signature du tuteur en entreprise:', 15, yPosition);
-    yPosition += 20;
-    pdf.text('Date et signature de l\'enseignant:', pageWidth - 100, yPosition - 20);
+    pdf.text('Date et signature du tuteur entreprise:', 15, signatureY);
+    pdf.text('Date et signature de l\'enseignant:', pageWidth - 100, signatureY);
 
     pdf.save(`PFMP_${eleve.nom}_${eleve.prenom}_${periode.nom}.pdf`);
   };
@@ -476,35 +551,45 @@ const ExportRapports: React.FC = () => {
     data.push(['Du:', formatDateFromString(periode.dateDebut)]);
     data.push(['Au:', formatDateFromString(periode.dateFin)]);
     data.push(['']);
-    data.push(['Compétence', 'Sous-compétence', 'Niveau', 'Commentaire']);
+    if (evaluation && (evaluation.nomEntreprise || evaluation.domaineActivite)) {
+      data.push(['ENTREPRISE D\'ACCUEIL']);
+      if (evaluation.nomEntreprise) {
+        data.push(['Nom:', evaluation.nomEntreprise]);
+      }
+      if (evaluation.domaineActivite) {
+        data.push(['Domaine d\'activité:', evaluation.domaineActivite]);
+      }
+      data.push(['']);
+    }
+    data.push(['Compétence', 'Sous-compétence', 'Niveau']);
 
     if (evaluation) {
       const competences = evaluation.competences;
       
-      data.push(['CC1 - S\'informer', 'Collecter les données', getNiveauSymbol(competences.cc1_collecter_donnees.niveau), competences.cc1_collecter_donnees.commentaire]);
+      data.push(['CC1 - S\'informer', 'Collecter les données', getNiveauSymbol(competences.cc1_collecter_donnees.niveau)]);
       
-      data.push(['CC2 - Organiser', 'Ordonner les données', getNiveauSymbol(competences.cc2_ordonner_donnees.niveau), competences.cc2_ordonner_donnees.commentaire]);
-      data.push(['', 'Repérer les contraintes', getNiveauSymbol(competences.cc2_reperer_contraintes.niveau), competences.cc2_reperer_contraintes.commentaire]);
+      data.push(['CC2 - Organiser', 'Ordonner les données', getNiveauSymbol(competences.cc2_ordonner_donnees.niveau)]);
+      data.push(['', 'Repérer les contraintes', getNiveauSymbol(competences.cc2_reperer_contraintes.niveau)]);
       
-      data.push(['CC3 - Analyser', 'Identifier les éléments', getNiveauSymbol(competences.cc3_identifier_elements.niveau), competences.cc3_identifier_elements.commentaire]);
-      data.push(['', 'Identifier les grandeurs', getNiveauSymbol(competences.cc3_identifier_grandeurs.niveau), competences.cc3_identifier_grandeurs.commentaire]);
-      data.push(['', 'Représenter l\'installation', getNiveauSymbol(competences.cc3_representer_installation.niveau), competences.cc3_representer_installation.commentaire]);
+      data.push(['CC3 - Analyser', 'Identifier les éléments', getNiveauSymbol(competences.cc3_identifier_elements.niveau)]);
+      data.push(['', 'Identifier les grandeurs', getNiveauSymbol(competences.cc3_identifier_grandeurs.niveau)]);
+      data.push(['', 'Représenter l\'installation', getNiveauSymbol(competences.cc3_representer_installation.niveau)]);
       
-      data.push(['CC4 - Réaliser', 'Implanter, câbler', getNiveauSymbol(competences.cc4_implanter_cabler.niveau), competences.cc4_implanter_cabler.commentaire]);
-      data.push(['', 'Réaliser l\'installation', getNiveauSymbol(competences.cc4_realiser_installation.niveau), competences.cc4_realiser_installation.commentaire]);
-      data.push(['', 'Attitude écoresponsable', getNiveauSymbol(competences.cc4_operer_attitude.niveau), competences.cc4_operer_attitude.commentaire]);
+      data.push(['CC4 - Réaliser', 'Implanter, câbler', getNiveauSymbol(competences.cc4_implanter_cabler.niveau)]);
+      data.push(['', 'Réaliser l\'installation', getNiveauSymbol(competences.cc4_realiser_installation.niveau)]);
+      data.push(['', 'Attitude écoresponsable', getNiveauSymbol(competences.cc4_operer_attitude.niveau)]);
       
-      data.push(['CC7 - Maintenance', 'Contrôler les données', getNiveauSymbol(competences.cc7_controler_donnees.niveau), competences.cc7_controler_donnees.commentaire]);
-      data.push(['', 'Constater les défaillances', getNiveauSymbol(competences.cc7_constater_defaillance.niveau), competences.cc7_constater_defaillance.commentaire]);
-      data.push(['', 'Lister les hypothèses', getNiveauSymbol(competences.cc7_lister_hypotheses.niveau), competences.cc7_lister_hypotheses.commentaire]);
+      data.push(['CC7 - Maintenance', 'Contrôler les données', getNiveauSymbol(competences.cc7_controler_donnees.niveau)]);
+      data.push(['', 'Constater les défaillances', getNiveauSymbol(competences.cc7_constater_defaillance.niveau)]);
+      data.push(['', 'Lister les hypothèses', getNiveauSymbol(competences.cc7_lister_hypotheses.niveau)]);
       
-      data.push(['CC8 - Communication', 'Compléter les documents', getNiveauSymbol(competences.cc8_completer_documents.niveau), competences.cc8_completer_documents.commentaire]);
-      data.push(['', 'Expliquer l\'avancement', getNiveauSymbol(competences.cc8_expliquer_avancement.niveau), competences.cc8_expliquer_avancement.commentaire]);
-      data.push(['', 'Rédiger compte rendu', getNiveauSymbol(competences.cc8_rediger_compte_rendu.niveau), competences.cc8_rediger_compte_rendu.commentaire]);
+      data.push(['CC8 - Communication', 'Compléter les documents', getNiveauSymbol(competences.cc8_completer_documents.niveau)]);
+      data.push(['', 'Expliquer l\'avancement', getNiveauSymbol(competences.cc8_expliquer_avancement.niveau)]);
+      data.push(['', 'Rédiger compte rendu', getNiveauSymbol(competences.cc8_rediger_compte_rendu.niveau)]);
       
-      data.push(['CC9 - Client/Usager', 'Interpréter les informations', getNiveauSymbol(competences.cc9_interpreter_informations.niveau), competences.cc9_interpreter_informations.commentaire]);
-      data.push(['', 'Expliquer le fonctionnement', getNiveauSymbol(competences.cc9_expliquer_fonctionnement.niveau), competences.cc9_expliquer_fonctionnement.commentaire]);
-      data.push(['', 'Informer sur les consignes', getNiveauSymbol(competences.cc9_informer_consignes.niveau), competences.cc9_informer_consignes.commentaire]);
+      data.push(['CC9 - Client/Usager', 'Interpréter les informations', getNiveauSymbol(competences.cc9_interpreter_informations.niveau)]);
+      data.push(['', 'Expliquer le fonctionnement', getNiveauSymbol(competences.cc9_expliquer_fonctionnement.niveau)]);
+      data.push(['', 'Informer sur les consignes', getNiveauSymbol(competences.cc9_informer_consignes.niveau)]);
       
       data.push(['']);
       data.push(['Commentaire général:', evaluation.commentaireGeneral]);
