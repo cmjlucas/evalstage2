@@ -66,6 +66,7 @@ const ExportRapports: React.FC = () => {
   const [selectedEleve, setSelectedEleve] = useState<string>('');
   const [selectedPeriode, setSelectedPeriode] = useState<string>('');
   const [exportFormat, setExportFormat] = useState<'pdf' | 'excel'>('pdf');
+  const [searchEleve, setSearchEleve] = useState('');
 
   useEffect(() => {
     loadData();
@@ -630,6 +631,35 @@ const ExportRapports: React.FC = () => {
     }
   };
 
+  // Fonction de normalisation pour la recherche intelligente
+  const normalizeText = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[00-\u036f]/g, '')
+      .toLowerCase();
+  };
+
+  // Trie et filtre les élèves selon la recherche
+  const filteredEleves = eleves
+    .filter(eleve => {
+      const search = normalizeText(searchEleve);
+      const nom = normalizeText(eleve.nom);
+      const prenom = normalizeText(eleve.prenom);
+      const fullName = normalizeText(`${eleve.prenom} ${eleve.nom}`);
+      return (
+        nom.includes(search) ||
+        prenom.includes(search) ||
+        fullName.includes(search)
+      );
+    })
+    .sort((a, b) => {
+      const nomA = a.nom.toLowerCase();
+      const nomB = b.nom.toLowerCase();
+      if (nomA < nomB) return -1;
+      if (nomA > nomB) return 1;
+      return a.prenom.toLowerCase().localeCompare(b.prenom.toLowerCase());
+    });
+
   if (loading) return <div className="loading">Chargement...</div>;
 
   return (
@@ -639,15 +669,23 @@ const ExportRapports: React.FC = () => {
       <div className="export-form">
         <div className="form-group">
           <label htmlFor="eleve-select">Sélectionner un élève:</label>
+          <input
+            type="text"
+            placeholder="Rechercher un élève (nom ou prénom)..."
+            value={searchEleve}
+            onChange={e => setSearchEleve(e.target.value)}
+            className="search-input"
+            style={{ marginBottom: '0.5rem', width: '100%' }}
+          />
           <select 
             id="eleve-select"
             value={selectedEleve} 
             onChange={(e) => setSelectedEleve(e.target.value)}
           >
             <option value="">-- Choisir un élève --</option>
-            {eleves.map(eleve => (
+            {filteredEleves.map(eleve => (
               <option key={eleve.id} value={eleve.id}>
-                {eleve.nom} {eleve.prenom}
+                {eleve.nom.toUpperCase()} {eleve.prenom}
               </option>
             ))}
           </select>
