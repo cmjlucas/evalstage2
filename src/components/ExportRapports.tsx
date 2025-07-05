@@ -641,17 +641,21 @@ const ExportRapports: React.FC = () => {
       .toLowerCase();
   };
 
-  // Trie et filtre les élèves selon la recherche
+  // Trie et filtre les élèves selon la recherche (propose dès la première lettre)
   const filteredEleves = eleves
     .filter(eleve => {
-      const search = normalizeText(searchEleve);
+      const search = normalizeText(searchEleve.trim());
+      if (!search) return true;
       const nom = normalizeText(eleve.nom);
       const prenom = normalizeText(eleve.prenom);
       const fullName = normalizeText(`${eleve.prenom} ${eleve.nom}`);
+      // Propose si le nom OU le prénom commence par la recherche, ou si la recherche est incluse
       return (
+        nom.startsWith(search) ||
+        prenom.startsWith(search) ||
+        fullName.includes(search) ||
         nom.includes(search) ||
-        prenom.includes(search) ||
-        fullName.includes(search)
+        prenom.includes(search)
       );
     })
     .sort((a, b) => {
@@ -661,6 +665,20 @@ const ExportRapports: React.FC = () => {
       if (nomA > nomB) return 1;
       return a.prenom.toLowerCase().localeCompare(b.prenom.toLowerCase());
     });
+
+  // Met en gras la partie du nom/prénom qui correspond à la recherche
+  const highlightMatch = (text: string, search: string) => {
+    if (!search) return text;
+    const normText = normalizeText(text);
+    const normSearch = normalizeText(search);
+    const index = normText.indexOf(normSearch);
+    if (index === -1) return text;
+    return <>
+      {text.slice(0, index)}
+      <b>{text.slice(index, index + search.length)}</b>
+      {text.slice(index + search.length)}
+    </>;
+  };
 
   // Sélectionne un élève depuis la suggestion
   const handleSuggestionClick = (eleveId: string, nom: string, prenom: string) => {
@@ -714,15 +732,17 @@ const ExportRapports: React.FC = () => {
                 overflowY: 'auto',
                 listStyle: 'none',
                 margin: 0,
-                padding: 0
+                padding: 0,
+                color: '#111',
+                fontWeight: 500
               }}>
                 {filteredEleves.slice(0, 10).map(eleve => (
                   <li
                     key={eleve.id}
-                    style={{ padding: '0.5rem', cursor: 'pointer' }}
+                    style={{ padding: '0.5rem', cursor: 'pointer', color: '#111', background: 'white' }}
                     onMouseDown={() => handleSuggestionClick(eleve.id, eleve.nom, eleve.prenom)}
                   >
-                    {eleve.nom.toUpperCase()} {eleve.prenom}
+                    {highlightMatch(eleve.nom.toUpperCase(), searchEleve)} {highlightMatch(eleve.prenom, searchEleve)}
                   </li>
                 ))}
               </ul>
