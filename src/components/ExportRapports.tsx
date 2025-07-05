@@ -54,6 +54,7 @@ interface Evaluation {
   };
   commentaireGeneral: string;
   recommandations: string;
+  nomTuteur?: string;
 }
 
 const ExportRapports: React.FC = () => {
@@ -420,6 +421,15 @@ const ExportRapports: React.FC = () => {
     pdf.text(`${eleve.nom.toUpperCase()}--${eleve.prenom}`, 20, yPosition + 8);
     yPosition += 12;
 
+    // Nom du tuteur
+    if (evaluation && evaluation.nomTuteur) {
+      pdf.rect(15, yPosition, pageWidth - 30, 8);
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(`Tuteur en entreprise : ${evaluation.nomTuteur}`, 20, yPosition + 6);
+      yPosition += 8;
+    }
+
     // Dénomination et secteur
     pdf.rect(15, yPosition, pageWidth - 30, 8);
     pdf.setFontSize(8);
@@ -494,40 +504,50 @@ const ExportRapports: React.FC = () => {
 
     if (evaluation) {
       // Dessiner le tableau d'évaluation
-      yPosition = drawEvaluationTable(pdf, yPosition, evaluation);
-      yPosition += 10;
+      const pageHeight = pdf.internal.pageSize.height;
+      let afterTableY = drawEvaluationTable(pdf, yPosition, evaluation);
+      yPosition = afterTableY + 10;
 
       // Commentaires et observations
       if (evaluation.commentaireGeneral || evaluation.recommandations) {
         pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(11);
         pdf.text('OBSERVATIONS :', 15, yPosition);
-        yPosition += 8;
-        
+        yPosition += 10;
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(9);
         if (evaluation.commentaireGeneral) {
           const commentaireLines = pdf.splitTextToSize(evaluation.commentaireGeneral, pageWidth - 30);
           pdf.text(commentaireLines, 15, yPosition);
-          yPosition += commentaireLines.length * 4 + 5;
+          yPosition += commentaireLines.length * 6 + 8;
         }
-        
         if (evaluation.recommandations) {
           pdf.setFont('helvetica', 'bold');
           pdf.text('RECOMMANDATIONS :', 15, yPosition);
-          yPosition += 5;
+          yPosition += 8;
           pdf.setFont('helvetica', 'normal');
           const recommandationLines = pdf.splitTextToSize(evaluation.recommandations, pageWidth - 30);
           pdf.text(recommandationLines, 15, yPosition);
+          yPosition += recommandationLines.length * 6 + 8;
         }
+      }
+
+      // Si la place restante est insuffisante, saute à une nouvelle page pour la signature
+      const signatureBlockHeight = 30;
+      if (yPosition + signatureBlockHeight > pageHeight - 20) {
+        pdf.addPage();
+        yPosition = 30;
+      } else {
+        yPosition += 20;
       }
     }
 
-    // Signature en bas de page
-    const signatureY = pdf.internal.pageSize.height - 30;
-    pdf.setFontSize(10);
+    // Signature en bas de page (toujours aéré)
+    const signatureY = pdf.internal.pageSize.height - 40;
+    pdf.setFontSize(11);
     pdf.setFont('helvetica', 'normal');
-    pdf.text('Date et signature du tuteur entreprise:', 15, signatureY);
-    pdf.text('Date et signature de l\'enseignant:', pageWidth - 100, signatureY);
+    pdf.text('Date et signature du tuteur entreprise :', 15, signatureY);
+    pdf.text('Date et signature de l\'enseignant :', pageWidth - 110, signatureY);
 
     pdf.save(`PFMP_${eleve.nom}_${eleve.prenom}_${periode.nom}.pdf`);
   };

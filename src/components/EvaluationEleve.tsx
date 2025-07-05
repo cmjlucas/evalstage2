@@ -31,6 +31,7 @@ interface Evaluation {
   eleveId: string;
   periodeId: string;
   dateEvaluation: Date;
+  nomTuteur?: string;
   nomEntreprise: string;
   domaineActivite: string;
       competences: {
@@ -86,6 +87,7 @@ const EvaluationEleve: React.FC = () => {
     eleveId: '',
     periodeId: '',
     dateEvaluation: new Date(),
+    nomTuteur: '',
     nomEntreprise: '',
     domaineActivite: '',
     competences: {
@@ -537,6 +539,22 @@ const EvaluationEleve: React.FC = () => {
               ))}
             </div>
           )}
+        </div>
+
+        {/* Champ nom du tuteur */}
+        <div className="tuteur-section">
+          <h2>Nom du tuteur en entreprise</h2>
+          <div className="form-group">
+            <label htmlFor="nomTuteur">Nom du tuteur</label>
+            <input
+              type="text"
+              id="nomTuteur"
+              value={evaluation.nomTuteur || ''}
+              onChange={(e) => setEvaluation({ ...evaluation, nomTuteur: e.target.value })}
+              placeholder="Nom du tuteur en entreprise"
+              className="form-input"
+            />
+          </div>
         </div>
 
         {evaluation.periodeId && (
