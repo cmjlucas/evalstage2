@@ -56,7 +56,7 @@ const HomePage: React.FC = () => {
     <div className="app home-landing dark"> 
       <main className="main" style={{ minHeight: '100vh' }}>
         <h1 style={{ textAlign: 'center', fontSize: '3rem', fontWeight: 800, marginBottom: '1rem' }}>
-          Gérez vos stages et évaluations avec IA
+          gestion des PFMP de seconde MTNE
         </h1>
         <p style={{ textAlign: 'center', fontSize: '1.3rem', marginBottom: '2.5rem', color: '#bbb' }}>
           Plateforme moderne pour la gestion des stages, des élèves et des évaluations
