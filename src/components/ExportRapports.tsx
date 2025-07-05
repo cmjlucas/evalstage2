@@ -190,7 +190,63 @@ const ExportRapports: React.FC = () => {
     pdf.rect(x, y - squareSize/2, squareSize, squareSize, 'F');
   };
 
-  const drawEvaluationTable = (pdf: jsPDF, yPosition: number, evaluation: any) => {
+  const competencesData = [
+    {
+      section: "CC1 - S'informer sur l'intervention ou la réalisation",
+      competences: [
+        { key: 'cc1_collecter_donnees', label: "Collecter les données nécessaires à l'intervention" }
+      ]
+    },
+    {
+      section: "CC2 - Organiser la réalisation ou l'intervention",
+      competences: [
+        { key: 'cc2_ordonner_donnees', label: "Ordonner les données nécessaires" },
+        { key: 'cc2_reperer_contraintes', label: "Repérer les contraintes énergétiques" }
+      ]
+    },
+    {
+      section: "CC3 - Analyser et exploiter les données",
+      competences: [
+        { key: 'cc3_identifier_elements', label: "Identifier les éléments du système" },
+        { key: 'cc3_identifier_grandeurs', label: "Identifier les grandeurs physiques" },
+        { key: 'cc3_representer_installation', label: "Représenter l'installation" }
+      ]
+    },
+    {
+      section: "CC4 - Réaliser une installation ou une intervention",
+      competences: [
+        { key: 'cc4_implanter_cabler', label: "Implanter, câbler les matériels" },
+        { key: 'cc4_realiser_installation', label: "Réaliser l'installation" },
+        { key: 'cc4_operer_attitude', label: "Opérer avec attitude écoresponsable" }
+      ]
+    },
+    {
+      section: "CC7 - Établir un pré-diagnostic à distance",
+      competences: [
+        { key: 'cc7_controler_donnees', label: "Contrôler les données d'exploitation" },
+        { key: 'cc7_constater_defaillance', label: "Constater la défaillance" },
+        { key: 'cc7_lister_hypotheses', label: "Lister les hypothèses de panne" }
+      ]
+    },
+    {
+      section: "CC8 - Renseigner les documents",
+      competences: [
+        { key: 'cc8_completer_documents', label: "Compléter les documents techniques" },
+        { key: 'cc8_expliquer_avancement', label: "Expliquer l'avancement des opérations" },
+        { key: 'cc8_rediger_compte_rendu', label: "Rédiger un compte-rendu" }
+      ]
+    },
+    {
+      section: "CC9 - Communiquer avec le client et/ou l'usager",
+      competences: [
+        { key: 'cc9_interpreter_informations', label: "Interpréter les informations du client" },
+        { key: 'cc9_expliquer_fonctionnement', label: "Expliquer le fonctionnement" },
+        { key: 'cc9_informer_consignes', label: "Informer des consignes de sécurité" }
+      ]
+    }
+  ];
+
+  const drawEvaluationTable = (pdf: jsPDF, yPosition: number, evaluation: any, sections: typeof competencesData) => {
     const tableStartY = yPosition;
     const rowHeight = 6;
     const colWidths = [100, 12, 12, 12, 12, 12]; // Largeurs des colonnes
@@ -253,68 +309,7 @@ const ExportRapports: React.FC = () => {
     
     let currentY = tableStartY + rowHeight;
     
-    // Définir les compétences et leurs sous-compétences
-    const competencesData = [
-      {
-        section: 'CC1 - S\'informer sur l\'intervention ou la réalisation',
-        competences: [
-          { key: 'cc1_collecter_donnees', label: 'Collecter les données nécessaires à l\'intervention' }
-        ]
-      },
-      {
-        section: 'CC2 - Organiser la réalisation ou l\'intervention',
-        competences: [
-          { key: 'cc2_ordonner_donnees', label: 'Ordonner les données nécessaires' },
-          { key: 'cc2_reperer_contraintes', label: 'Repérer les contraintes énergétiques' }
-        ]
-      },
-      {
-        section: 'CC3 - Analyser et exploiter les données',
-        competences: [
-          { key: 'cc3_identifier_elements', label: 'Identifier les éléments du système' },
-          { key: 'cc3_identifier_grandeurs', label: 'Identifier les grandeurs physiques' },
-          { key: 'cc3_representer_installation', label: 'Représenter l\'installation' }
-        ]
-      },
-      {
-        section: 'CC4 - Réaliser une installation ou une intervention',
-        competences: [
-          { key: 'cc4_implanter_cabler', label: 'Implanter, câbler les matériels' },
-          { key: 'cc4_realiser_installation', label: 'Réaliser l\'installation' },
-          { key: 'cc4_operer_attitude', label: 'Opérer avec attitude écoresponsable' }
-        ]
-      },
-      {
-        section: 'CC7 - Établir un pré-diagnostic à distance',
-        competences: [
-          { key: 'cc7_controler_donnees', label: 'Contrôler les données d\'exploitation' },
-          { key: 'cc7_constater_defaillance', label: 'Constater la défaillance' },
-          { key: 'cc7_lister_hypotheses', label: 'Lister les hypothèses de panne' }
-        ]
-      },
-      {
-        section: 'CC8 - Renseigner les documents',
-        competences: [
-          { key: 'cc8_completer_documents', label: 'Compléter les documents techniques' },
-          { key: 'cc8_expliquer_avancement', label: 'Expliquer l\'avancement des opérations' },
-          { key: 'cc8_rediger_compte_rendu', label: 'Rédiger un compte-rendu' }
-        ]
-      },
-      {
-        section: 'CC9 - Communiquer avec le client et/ou l\'usager',
-        competences: [
-          { key: 'cc9_interpreter_informations', label: 'Interpréter les informations du client' },
-          { key: 'cc9_expliquer_fonctionnement', label: 'Expliquer le fonctionnement' },
-          { key: 'cc9_informer_consignes', label: 'Informer des consignes de sécurité' }
-        ]
-      }
-    ];
-    
-    // Dessiner les lignes du tableau
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(7);
-    
-    competencesData.forEach(section => {
+    sections.forEach(section => {
       section.competences.forEach(competence => {
         const niveau = evaluation.competences[competence.key]?.niveau || 'non_evaluee';
         
@@ -330,33 +325,40 @@ const ExportRapports: React.FC = () => {
         const lines = pdf.splitTextToSize(competence.label, colWidths[0] - 4);
         pdf.text(lines, x + 2, currentY + 3);
         
-        // Marquer la case correspondante selon le niveau
-        let caseX = x + colWidths[0] + 2;
+        // Marquer la case correspondante selon le niveau (carrés centrés)
+        const squareSize = 4;
+        const margin = 1; // Marge autour du carré
         
         switch (niveau) {
           case 'non_evaluee':
             pdf.setFillColor(200, 200, 200);
-            pdf.rect(caseX, currentY + 1, colWidths[1] - 4, 4, 'F');
+            const x1 = x + colWidths[0] + (colWidths[1] - squareSize) / 2;
+            const y1 = currentY + (rowHeight - squareSize) / 2;
+            pdf.rect(x1, y1, squareSize, squareSize, 'F');
             break;
           case 'non_acquise':
-            caseX += colWidths[1];
             pdf.setFillColor(255, 68, 68);
-            pdf.rect(caseX + 2, currentY + 1, colWidths[2] - 4, 4, 'F');
+            const x2 = x + colWidths[0] + colWidths[1] + (colWidths[2] - squareSize) / 2;
+            const y2 = currentY + (rowHeight - squareSize) / 2;
+            pdf.rect(x2, y2, squareSize, squareSize, 'F');
             break;
           case 'en_cours':
-            caseX += colWidths[1] + colWidths[2];
             pdf.setFillColor(255, 136, 0);
-            pdf.rect(caseX + 2, currentY + 1, colWidths[3] - 4, 4, 'F');
+            const x3 = x + colWidths[0] + colWidths[1] + colWidths[2] + (colWidths[3] - squareSize) / 2;
+            const y3 = currentY + (rowHeight - squareSize) / 2;
+            pdf.rect(x3, y3, squareSize, squareSize, 'F');
             break;
           case 'partiellement_acquise':
-            caseX += colWidths[1] + colWidths[2] + colWidths[3];
             pdf.setFillColor(255, 170, 0);
-            pdf.rect(caseX + 2, currentY + 1, colWidths[4] - 4, 4, 'F');
+            const x4 = x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + (colWidths[4] - squareSize) / 2;
+            const y4 = currentY + (rowHeight - squareSize) / 2;
+            pdf.rect(x4, y4, squareSize, squareSize, 'F');
             break;
           case 'acquise':
-            caseX += colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4];
             pdf.setFillColor(0, 170, 68);
-            pdf.rect(caseX + 2, currentY + 1, colWidths[5] - 4, 4, 'F');
+            const x5 = x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + (colWidths[5] - squareSize) / 2;
+            const y5 = currentY + (rowHeight - squareSize) / 2;
+            pdf.rect(x5, y5, squareSize, squareSize, 'F');
             break;
         }
         
@@ -384,7 +386,7 @@ const ExportRapports: React.FC = () => {
     // En-tête avec logo (si disponible)
     pdf.setFontSize(10);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('SECONDE MÉTIERS DES TRANSITIONS NUMÉRIQUE ET ÉNERGÉTIQUE', 15, yPosition);
+    pdf.text('SECONDE MÉTIERS DE LA TRANSITION NUMÉRIQUE ET ÉNERGÉTIQUE', 15, yPosition);
     yPosition += 10;
 
     // Cadre titre
@@ -402,7 +404,7 @@ const ExportRapports: React.FC = () => {
     pdf.rect(15, yPosition, 100, 15);
     pdf.setFontSize(16);
     pdf.setFont('helvetica', 'bold');
-    pdf.text(`PFMP N° ${periode.nom.replace('PFMP', '').replace('-', '').trim()}`, 20, yPosition + 10);
+    pdf.text(`${periode.nom}`, 20, yPosition + 10);
     
     // Dates à droite
     pdf.rect(pageWidth - 80, yPosition, 65, 15);
@@ -506,53 +508,80 @@ const ExportRapports: React.FC = () => {
     yPosition += 10;
 
     if (evaluation) {
-      // Dessiner le tableau d'évaluation
-      const pageHeight = pdf.internal.pageSize.height;
-      let afterTableY = drawEvaluationTable(pdf, yPosition, evaluation);
-      yPosition = afterTableY + 10;
-
-      // Commentaires et observations
+      // Découper les sections en deux moitiés équilibrées
+      const totalCompetences = competencesData.reduce((acc, sec) => acc + sec.competences.length, 0);
+      const half = Math.ceil(totalCompetences / 2);
+      let count = 0;
+      const firstHalf: typeof competencesData = [];
+      const secondHalf: typeof competencesData = [];
+      for (const section of competencesData) {
+        if (count < half) {
+          // Si toute la section tient dans la première moitié
+          if (count + section.competences.length <= half) {
+            firstHalf.push(section);
+            count += section.competences.length;
+          } else {
+            // Découper la section
+            const n = half - count;
+            firstHalf.push({
+              section: section.section,
+              competences: section.competences.slice(0, n)
+            });
+            secondHalf.push({
+              section: section.section,
+              competences: section.competences.slice(n)
+            });
+            count = half;
+          }
+        } else {
+          secondHalf.push(section);
+        }
+      }
+      // Dessiner la première moitié
+      let afterTableY = drawEvaluationTable(pdf, yPosition, evaluation, firstHalf);
+      // Sauter à la page suivante
+      pdf.addPage();
+      let y2 = 20;
+      // Redessiner l'en-tête de tableau sur la 2e page
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('ÉVALUATION DES COMPÉTENCES (suite)', 15, y2);
+      y2 += 10;
+      // Dessiner la seconde moitié
+      let afterTableY2 = drawEvaluationTable(pdf, y2, evaluation, secondHalf);
+      y2 = afterTableY2 + 10;
+      // Commentaires et observations sur la 2e page
       if (evaluation.commentaireGeneral || evaluation.recommandations) {
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(11);
-        pdf.text('OBSERVATIONS :', 15, yPosition);
-        yPosition += 10;
+        pdf.text('OBSERVATIONS :', 15, y2);
+        y2 += 10;
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(9);
         if (evaluation.commentaireGeneral) {
           const commentaireLines = pdf.splitTextToSize(evaluation.commentaireGeneral, pageWidth - 30);
-          pdf.text(commentaireLines, 15, yPosition);
-          yPosition += commentaireLines.length * 6 + 8;
+          pdf.text(commentaireLines, 15, y2);
+          y2 += commentaireLines.length * 6 + 8;
         }
         if (evaluation.recommandations) {
           pdf.setFont('helvetica', 'bold');
-          pdf.text('RECOMMANDATIONS :', 15, yPosition);
-          yPosition += 8;
+          pdf.text('RECOMMANDATIONS :', 15, y2);
+          y2 += 8;
           pdf.setFont('helvetica', 'normal');
           const recommandationLines = pdf.splitTextToSize(evaluation.recommandations, pageWidth - 30);
-          pdf.text(recommandationLines, 15, yPosition);
-          yPosition += recommandationLines.length * 6 + 8;
+          pdf.text(recommandationLines, 15, y2);
+          y2 += recommandationLines.length * 6 + 8;
         }
       }
-
-      // Si la place restante est insuffisante, saute à une nouvelle page pour la signature
-      const signatureBlockHeight = 30;
-      if (yPosition + signatureBlockHeight > pageHeight - 20) {
-        pdf.addPage();
-        yPosition = 30;
-      } else {
-        yPosition += 20;
-      }
+      // Signature en bas de la 2e page
+      const signatureY = pdf.internal.pageSize.height - 40;
+      pdf.setFontSize(11);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text('Date et signature du tuteur entreprise :', 15, signatureY);
+      pdf.text('Date et signature de l\'enseignant :', pageWidth - 110, signatureY);
+      pdf.save(`PFMP_${eleve.nom}_${eleve.prenom}_${periode.nom}.pdf`);
+      return;
     }
-
-    // Signature en bas de page (toujours aéré)
-    const signatureY = pdf.internal.pageSize.height - 40;
-    pdf.setFontSize(11);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text('Date et signature du tuteur entreprise :', 15, signatureY);
-    pdf.text('Date et signature de l\'enseignant :', pageWidth - 110, signatureY);
-
-    pdf.save(`PFMP_${eleve.nom}_${eleve.prenom}_${periode.nom}.pdf`);
   };
 
   const exportToExcel = () => {
@@ -637,20 +666,20 @@ const ExportRapports: React.FC = () => {
   const normalizeText = (text: string): string => {
     return text
       .normalize('NFD')
-      .replace(/[00-\u036f]/g, '')
+      .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase();
   };
 
-  // Filtrage identique à EvaluationEleve
+  // Filtrage identique à EvaluationEleve (startsWith sur nom, prénom, nom complet)
   const filteredEleves = eleves.filter(eleve => {
     const searchNormalized = normalizeText(searchEleve);
     const nomNormalized = normalizeText(eleve.nom);
     const prenomNormalized = normalizeText(eleve.prenom);
     const fullNameNormalized = normalizeText(`${eleve.prenom} ${eleve.nom}`);
     return (
-      nomNormalized.includes(searchNormalized) ||
-      prenomNormalized.includes(searchNormalized) ||
-      fullNameNormalized.includes(searchNormalized)
+      nomNormalized.startsWith(searchNormalized) ||
+      prenomNormalized.startsWith(searchNormalized) ||
+      fullNameNormalized.startsWith(searchNormalized)
     );
   }).sort((a, b) => {
     const nomA = a.nom.toLowerCase();
