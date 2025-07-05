@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import jsPDF from 'jspdf';
@@ -67,6 +67,8 @@ const ExportRapports: React.FC = () => {
   const [selectedPeriode, setSelectedPeriode] = useState<string>('');
   const [exportFormat, setExportFormat] = useState<'pdf' | 'excel'>('pdf');
   const [searchEleve, setSearchEleve] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadData();
@@ -660,6 +662,24 @@ const ExportRapports: React.FC = () => {
       return a.prenom.toLowerCase().localeCompare(b.prenom.toLowerCase());
     });
 
+  // Sélectionne un élève depuis la suggestion
+  const handleSuggestionClick = (eleveId: string, nom: string, prenom: string) => {
+    setSelectedEleve(eleveId);
+    setSearchEleve(`${nom.toUpperCase()} ${prenom}`);
+    setShowSuggestions(false);
+  };
+
+  // Ferme la liste de suggestions si on clique en dehors
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   if (loading) return <div className="loading">Chargement...</div>;
 
   return (
@@ -669,26 +689,45 @@ const ExportRapports: React.FC = () => {
       <div className="export-form">
         <div className="form-group">
           <label htmlFor="eleve-select">Sélectionner un élève:</label>
-          <input
-            type="text"
-            placeholder="Rechercher un élève (nom ou prénom)..."
-            value={searchEleve}
-            onChange={e => setSearchEleve(e.target.value)}
-            className="search-input"
-            style={{ marginBottom: '0.5rem', width: '100%' }}
-          />
-          <select 
-            id="eleve-select"
-            value={selectedEleve} 
-            onChange={(e) => setSelectedEleve(e.target.value)}
-          >
-            <option value="">-- Choisir un élève --</option>
-            {filteredEleves.map(eleve => (
-              <option key={eleve.id} value={eleve.id}>
-                {eleve.nom.toUpperCase()} {eleve.prenom}
-              </option>
-            ))}
-          </select>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="text"
+              placeholder="Rechercher un élève (nom ou prénom)..."
+              value={searchEleve}
+              ref={inputRef}
+              onFocus={() => setShowSuggestions(true)}
+              onChange={e => {
+                setSearchEleve(e.target.value);
+                setShowSuggestions(true);
+              }}
+              className="search-input"
+              style={{ marginBottom: '0.5rem', width: '100%' }}
+            />
+            {showSuggestions && searchEleve && filteredEleves.length > 0 && (
+              <ul style={{
+                position: 'absolute',
+                zIndex: 10,
+                background: 'white',
+                border: '1px solid #ccc',
+                width: '100%',
+                maxHeight: '180px',
+                overflowY: 'auto',
+                listStyle: 'none',
+                margin: 0,
+                padding: 0
+              }}>
+                {filteredEleves.slice(0, 10).map(eleve => (
+                  <li
+                    key={eleve.id}
+                    style={{ padding: '0.5rem', cursor: 'pointer' }}
+                    onMouseDown={() => handleSuggestionClick(eleve.id, eleve.nom, eleve.prenom)}
+                  >
+                    {eleve.nom.toUpperCase()} {eleve.prenom}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
 
         <div className="form-group">
