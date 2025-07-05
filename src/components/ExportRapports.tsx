@@ -641,7 +641,7 @@ const ExportRapports: React.FC = () => {
       .toLowerCase();
   };
 
-  // Trie et filtre les élèves selon la recherche (propose dès la première lettre)
+  // Trie et filtre les élèves selon la recherche (filtre sur toute occurrence)
   const filteredEleves = eleves
     .filter(eleve => {
       const search = normalizeText(searchEleve.trim());
@@ -649,13 +649,11 @@ const ExportRapports: React.FC = () => {
       const nom = normalizeText(eleve.nom);
       const prenom = normalizeText(eleve.prenom);
       const fullName = normalizeText(`${eleve.prenom} ${eleve.nom}`);
-      // Propose si le nom OU le prénom commence par la recherche, ou si la recherche est incluse
+      // Propose si la séquence est incluse n'importe où dans le nom, prénom ou nom complet
       return (
-        nom.startsWith(search) ||
-        prenom.startsWith(search) ||
-        fullName.includes(search) ||
         nom.includes(search) ||
-        prenom.includes(search)
+        prenom.includes(search) ||
+        fullName.includes(search)
       );
     })
     .sort((a, b) => {
