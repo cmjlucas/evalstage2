@@ -633,37 +633,32 @@ const ExportRapports: React.FC = () => {
     }
   };
 
-  // Fonction de normalisation pour la recherche intelligente (accents, casse, espaces)
+  // Fonction de normalisation pour la recherche intelligente (identique à EvaluationEleve)
   const normalizeText = (text: string): string => {
     return text
       .normalize('NFD')
-      .replace(/[ 0-\u036f]/g, '')
-      .replace(/\s+/g, '')
+      .replace(/[00-\u036f]/g, '')
       .toLowerCase();
   };
 
-  // Trie et filtre les élèves selon la recherche (séquence exacte, collée, insensible à la casse et aux accents)
-  const filteredEleves = eleves
-    .filter(eleve => {
-      const search = normalizeText(searchEleve.trim());
-      if (!search) return true;
-      const nom = normalizeText(eleve.nom);
-      const prenom = normalizeText(eleve.prenom);
-      const fullName = normalizeText(`${eleve.prenom}${eleve.nom}`);
-      // Propose si la séquence est incluse (collée) dans le nom, prénom ou nom complet
-      return (
-        nom.includes(search) ||
-        prenom.includes(search) ||
-        fullName.includes(search)
-      );
-    })
-    .sort((a, b) => {
-      const nomA = a.nom.toLowerCase();
-      const nomB = b.nom.toLowerCase();
-      if (nomA < nomB) return -1;
-      if (nomA > nomB) return 1;
-      return a.prenom.toLowerCase().localeCompare(b.prenom.toLowerCase());
-    });
+  // Filtrage identique à EvaluationEleve
+  const filteredEleves = eleves.filter(eleve => {
+    const searchNormalized = normalizeText(searchEleve);
+    const nomNormalized = normalizeText(eleve.nom);
+    const prenomNormalized = normalizeText(eleve.prenom);
+    const fullNameNormalized = normalizeText(`${eleve.prenom} ${eleve.nom}`);
+    return (
+      nomNormalized.includes(searchNormalized) ||
+      prenomNormalized.includes(searchNormalized) ||
+      fullNameNormalized.includes(searchNormalized)
+    );
+  }).sort((a, b) => {
+    const nomA = a.nom.toLowerCase();
+    const nomB = b.nom.toLowerCase();
+    if (nomA < nomB) return -1;
+    if (nomA > nomB) return 1;
+    return a.prenom.toLowerCase().localeCompare(b.prenom.toLowerCase());
+  });
 
   // Met en gras la partie du nom/prénom qui correspond à la recherche
   const highlightMatch = (text: string, search: string) => {
