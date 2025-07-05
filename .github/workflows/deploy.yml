@@ -3,12 +3,6 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
 
 jobs:
   build-and-deploy:
@@ -22,18 +16,15 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
         
     - name: Install dependencies
-      run: npm ci
+      run: npm install
       
     - name: Build
       run: npm run build
       
-    - name: Deploy to GitHub Pages
+    - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
-      if: github.ref == 'refs/heads/main'
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist
-        force_orphan: true 
+        publish_dir: ./dist 
