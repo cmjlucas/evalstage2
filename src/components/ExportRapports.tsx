@@ -633,7 +633,7 @@ const ExportRapports: React.FC = () => {
     }
   };
 
-  // Fonction de normalisation pour la recherche intelligente (identique à EvaluationEleve)
+  // Fonction de normalisation (identique à EvaluationEleve)
   const normalizeText = (text: string): string => {
     return text
       .normalize('NFD')
@@ -660,24 +660,10 @@ const ExportRapports: React.FC = () => {
     return a.prenom.toLowerCase().localeCompare(b.prenom.toLowerCase());
   });
 
-  // Met en gras la partie du nom/prénom qui correspond à la recherche
-  const highlightMatch = (text: string, search: string) => {
-    if (!search) return text;
-    const normText = normalizeText(text);
-    const normSearch = normalizeText(search);
-    const index = normText.indexOf(normSearch);
-    if (index === -1) return text;
-    return <>
-      {text.slice(0, index)}
-      <b>{text.slice(index, index + search.length)}</b>
-      {text.slice(index + search.length)}
-    </>;
-  };
-
   // Sélectionne un élève depuis la suggestion
   const handleSuggestionClick = (eleveId: string, nom: string, prenom: string) => {
     setSelectedEleve(eleveId);
-    setSearchEleve(`${nom.toUpperCase()} ${prenom}`);
+    setSearchEleve(`${prenom} ${nom.toUpperCase()}`);
     setShowSuggestions(false);
   };
 
@@ -736,7 +722,7 @@ const ExportRapports: React.FC = () => {
                     style={{ padding: '0.5rem', cursor: 'pointer', color: '#111', background: 'white' }}
                     onMouseDown={() => handleSuggestionClick(eleve.id, eleve.nom, eleve.prenom)}
                   >
-                    {highlightMatch(eleve.nom.toUpperCase(), searchEleve)} {highlightMatch(eleve.prenom, searchEleve)}
+                    {eleve.prenom} {eleve.nom.toUpperCase()}
                   </li>
                 ))}
               </ul>
