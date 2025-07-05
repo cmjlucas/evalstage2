@@ -633,23 +633,24 @@ const ExportRapports: React.FC = () => {
     }
   };
 
-  // Fonction de normalisation pour la recherche intelligente
+  // Fonction de normalisation pour la recherche intelligente (accents, casse, espaces)
   const normalizeText = (text: string): string => {
     return text
       .normalize('NFD')
-      .replace(/[00-\u036f]/g, '')
+      .replace(/[ 0-\u036f]/g, '')
+      .replace(/\s+/g, '')
       .toLowerCase();
   };
 
-  // Trie et filtre les élèves selon la recherche (filtre sur toute occurrence)
+  // Trie et filtre les élèves selon la recherche (séquence exacte, collée, insensible à la casse et aux accents)
   const filteredEleves = eleves
     .filter(eleve => {
       const search = normalizeText(searchEleve.trim());
       if (!search) return true;
       const nom = normalizeText(eleve.nom);
       const prenom = normalizeText(eleve.prenom);
-      const fullName = normalizeText(`${eleve.prenom} ${eleve.nom}`);
-      // Propose si la séquence est incluse n'importe où dans le nom, prénom ou nom complet
+      const fullName = normalizeText(`${eleve.prenom}${eleve.nom}`);
+      // Propose si la séquence est incluse (collée) dans le nom, prénom ou nom complet
       return (
         nom.includes(search) ||
         prenom.includes(search) ||
